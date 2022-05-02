@@ -13,7 +13,6 @@ class Despesa{
 
     validar_parametros(){
         for(let key in this){
-            console.log(this[key])
             if(this[key] == "" || this[key] == undefined || this[key] == null){
                 return false
             }
@@ -50,13 +49,46 @@ class Bd{
             if(despesa === null){
                 continue
             }
+            despesa.id = i
             registros.push(despesa)
         }
+        console.log(registros)
         return registros
     }
     
     pesquisar(despesa){
-        console.log(despesa)
+        let despesas = this.recuperarRegistros()
+        // Ano
+        if(despesa.ano != ''){
+            despesas = despesas.filter(d => d.ano == despesa.ano)
+        }
+            
+        // Mes
+        if(despesa.mes != ''){
+            despesas = despesas.filter(d => d.mes == despesa.mes)
+        }
+            
+        // Dia
+        if(despesa.dia != ''){
+            despesas = despesas.filter(d => d.dia == despesa.dia)
+        }
+            
+        // Tipo
+        if(despesa.tipo != ''){
+            despesas = despesas.filter(d => d.tipo == despesa.tipo)
+        }
+            
+        // Descricao
+        if(despesa.descricao != ''){
+            despesas = despesas.filter(d => (d.descricao).toLowerCase().includes((despesa.descricao).toLowerCase()))
+        }
+            
+        // Valor
+        if(despesa.valor != ''){
+            despesas = despesas.filter(d => d.valor == despesa.valor)
+        }
+            
+        return despesas
     }
 }
 let bd = new Bd
@@ -100,28 +132,36 @@ function registrarDespesa(){
 
         $('#modalGravacao').modal('show')
     }else{
-        document.getElementById('modalLabel').innerHTML = 'Erro no registro'
-        document.getElementById('modalBody').innerHTML = 'Existem campos obrigratórios que não foram preenchidos'
-        if(document.getElementById('modalHeader').classList.contains('text-success')){
-            document.getElementById('modalHeader').classList.remove('text-success')
-            document.getElementById('btnClose').classList.remove('btn-success')
-        }
-        document.getElementById('modalHeader').classList.add('text-danger')
-        document.getElementById('btnClose').classList.add('btn-danger')
-        document.getElementById('btnConsulta').style.display = 'none';
-        document.getElementById('btnClose').innerHTML = 'Voltar e corrigir'
-        
-        $('#modalGravacao').modal('show')
+        modalErro('Erro no registro', 'Existem campos obrigratórios que não foram preenchidos', 'Voltar e corrigir')
     }
 }
 
 
+function modalErro(titulo, descricao, btn_title){
+    document.getElementById('modalLabel').innerHTML = titulo
+    document.getElementById('modalBody').innerHTML = descricao
+    if(document.getElementById('modalHeader').classList.contains('text-success')){
+        document.getElementById('modalHeader').classList.remove('text-success')
+        document.getElementById('btnClose').classList.remove('btn-success')
+    }
+    document.getElementById('modalHeader').classList.add('text-danger')
+    document.getElementById('btnClose').classList.add('btn-danger')
+    document.getElementById('btnConsulta').style.display = 'none';
+    document.getElementById('btnClose').innerHTML = btn_title
+    
+    $('#modalGravacao').modal('show')
+}
+
 /* 
     ====================== FUNÇÕES DE CONSULTA ======================
 */
-function carregaListaDespesas(){
-    let despesas = bd.recuperarRegistros()
-    console.log(despesas)
+function carregaListaDespesas(despesas = Array(), filtro = false){
+    if(despesas.length == 0 && filtro == false){
+        despesas = bd.recuperarRegistros()
+    }else if(despesas.length == 0 && filtro == true){
+        modalErro('Consulta', 'Não foi achado uma consulta com esses dados! :(', 'Pesquisar novamente')
+    }
+    
     document.getElementById('tabela').innerHTML = ''
     
     for(let despesa in despesas){
@@ -147,7 +187,9 @@ function carregaListaDespesas(){
         <td>${despesas[despesa].tipo}</td>
         <td>${despesas[despesa].descricao}</td>
         <td>${despesas[despesa].valor}</td>
+        <td><button id="${despesas[despesa].id}" onclick="removerDespesa(${despesas[despesa].id})" class="btn btn-primary btn-danger"><i class="fa-solid fa-rectangle-xmark"></i></button></td>
         `
+        
     }
 }
 
@@ -160,6 +202,12 @@ function pesquisarDespesa(){
     let valor = document.getElementById('valor').value
 
     let despesa = new Despesa(ano, mes, dia, tipo, descricao, valor)
-    
-    bd.pesquisar(despesa)
+    let despesas = bd.pesquisar(despesa)
+
+    carregaListaDespesas(despesas, true)
+}
+
+function removerDespesa(id_despesa){
+    localStorage.removeItem(id_despesa);
+    carregaListaDespesas()
 }

@@ -13,6 +13,7 @@
 
     <!-- Font Awesome -->
     <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <script src="https://kit.fontawesome.com/cb18e7956b.js" crossorigin="anonymous"></script>
 
 	</head>
 
@@ -127,7 +128,28 @@
       </div>
     </div>
 
+    
+    <!-- Modal de avisos-->
+    <div class="modal fade" id="modalGravacao" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div id="modalHeader" class="modal-header"> <!-- text-danger -->
+            <h5 class="modal-title" id="modalLabel"></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="modalBody" class="modal-body">
+            
+          </div>
+          <div class="modal-footer">
+            <a href="consulta.html"><button type="button" class="btn btn-secondary" id="btnConsulta">Consultar Despesas</button></a>
+            <button id="btnClose" type="button" class="btn btn-primary" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="js/script.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>	
 
 </html>
